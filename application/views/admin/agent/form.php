@@ -542,6 +542,6 @@ vat percentage.
 			}
 		});
 		
-		jQuery( "#vat_reg_date" ).datepicker({ dateFormat: "dd-mm-yy" ,minDate: 0 });
+		jQuery( "#vat_reg_date" ).datepicker({ dateFormat: "dd-mm-yy" });
 	});	
 	</script>
