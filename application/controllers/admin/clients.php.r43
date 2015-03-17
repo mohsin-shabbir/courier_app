@@ -1,0 +1,637 @@
+<?php
+class Clients extends MY_Controller
+{
+	public function __construct()
+	{
+		parent::__admin();
+		$this->load->library('email');
+		$this->load->model("common_model");
+	}
+	//cases
+	public function index()
+	{
+		$current_url=current_url();
+		$list_url=$current_url.'/list_datatable';
+		$this->data['list_url']=$list_url;
+		$this->template->load('main','admin/client/client_listing',$this->data);
+		
+	}
+
+	public function profile($client_id="")
+	{
+		if(!empty($client_id))
+		{
+			$update_data	=	$this->db_handler->get('clients','id',$client_id);
+			if(isset($update_data[0]))
+			{
+				$this->data['data']=$update_data[0];
+			}
+		}
+		$this->template->load('main','admin/client/client_detail',$this->data);
+	}
+
+	public function save($update_id="")
+	{
+		if(!empty($update_id))
+		{
+			$update_data	=	$this->db_handler->get('clients','id',$update_id);
+			if(isset($update_data[0]))
+			{
+				$this->data['data']=$update_data[0];
+				$this->data['data']['password']=$this->encrypt->decode($this->data['data']['password'],ENCRYPT_KEY);
+				$this->data['data']['security_answer']=$this->encrypt->decode($this->data['data']['security_answer'],ENCRYPT_KEY);	
+			}
+		}
+		else if($client_data=$this->input->post())
+		{	
+			$this->form_validation->set_rules('id', 'id', 'required|trim|strip_tags|xss_clean');		
+			$this->form_validation->set_rules('salutation', 'Salutation', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('first_name', 'First Name', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('last_name', 'Last Name', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('addressUkCode1', 'Post Code', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('house_numberUkCode1', 'Address Line 1', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('streetUkCode1', 'Street address', 'trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('townUkCode1', 'town address', 'trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('countyUkCode1', 'country address', 'trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('longitudeUkCode1', 'Longitude', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('latitudeUkCode1', 'Latitude', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('telephone', 'Telephone', 'required|trim|strip_tags|xss_clean|alpha_numeric');
+			$this->form_validation->set_rules('mobile', 'Mobile', 'required|trim|strip_tags|xss_clean|alpha_numeric');
+			$this->form_validation->set_rules('email', 'Email', 'required|trim|strip_tags|xss_clean|valid_email');
+			$this->form_validation->set_rules('old_profile_image', 'old profile image', 'trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('security_question', 'Security Question', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('security_answer', 'Security Answer', 'required|trim|strip_tags|xss_clean|max_length[200]');
+			$this->form_validation->set_rules('country_code', 'Country', 'required|trim|strip_tags|xss_clean');
+
+
+			if(isset($client_data['id']) && $client_data['id']=='-1')
+			{
+				$this->form_validation->set_rules('password', 'Password', 'required|trim|strip_tags|xss_clean|min_length[8]');
+				$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|trim|strip_tags|xss_clean|matches[password]');
+			}
+			else
+			{
+				$this->form_validation->set_rules('password', 'Password', 'trim|strip_tags|xss_clean|min_length[8]');
+				$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|strip_tags|xss_clean|matches[password]');
+			}
+				
+			if ($this->form_validation->run())
+			{	
+				if(isset($client_data['addressUkCode1']))
+				{
+					$client_data['post_code']	=	$client_data['addressUkCode1'];
+					unset($client_data['addressUkCode1']);
+				}
+				if(isset($client_data['house_numberUkCode1']))
+				{
+					$client_data['address_line1']	=	$client_data['house_numberUkCode1'];
+					unset($client_data['house_numberUkCode1']);
+				}
+				if(isset($client_data['streetUkCode1']))
+				{
+					$client_data['address_line2']	=	$client_data['streetUkCode1'];
+					unset($client_data['streetUkCode1']);
+				}
+				if(isset($client_data['townUkCode1']))
+				{
+					$client_data['address_line3']	=	$client_data['townUkCode1'];
+					unset($client_data['townUkCode1']);
+				}
+				if(isset($client_data['countyUkCode1']))
+				{
+					$client_data['address_line4']	=	$client_data['countyUkCode1'];
+					unset($client_data['countyUkCode1']);
+				}
+				if(isset($client_data['longitudeUkCode1']))
+				{
+					$client_data['longitude']	=	$client_data['longitudeUkCode1'];
+					unset($client_data['longitudeUkCode1']);
+				}
+				if(isset($client_data['latitudeUkCode1']))
+				{
+					$client_data['latitude']	=	$client_data['latitudeUkCode1'];
+					unset($client_data['latitudeUkCode1']);
+				}						
+				if(isset($client_data['confirm_password']))
+					unset($client_data['confirm_password']);
+				$client_data['password']		=	$this->encrypt->encode($client_data['password'],ENCRYPT_KEY);
+				$client_data['security_answer'] =	$this->encrypt->encode($client_data['security_answer'],ENCRYPT_KEY);																										
+
+				if(isset($client_data['old_profile_image']))
+				{
+					$old_profile_image=$client_data['old_profile_image'];
+					unset($client_data['old_profile_image']);
+				}
+
+				$image_file=array();	
+				$image_upload_message="";		
+				$image_file['profile_thumb']='';
+
+
+				$agent_data['created_by']	=	"ADMIN";
+				$agent_data['updated_by']	=	"ADMIN";
+				$agent_data['updater_id']	=	"1";
+
+				if($insert_id=$this->db_handler->save('clients',$client_data))
+				{
+					$msg = $this->common_model->prepMsg($insert_id , '8' ,'clients');
+					$subject = $msg['subject'];
+					$message = $msg['template'];
+					send_email($this->input->post('email') , $subject ,$message );
+					/*$this->email->clear();
+					$this->email->to($this->input->post('email'));
+					$this->email->from(REGISTRATION_FROM_EMAIL,FROM_NAME);
+					$this->email->cc(REGISTRATION_CC);
+					$this->email->bcc(REGISTRATION_BCC);
+					$this->email->reply_to(REGISTRATION_REPLY_TO);
+					$this->email->subject($subject);
+					$this->email->message($message);
+					$this->email->send();*/
+					$response=$this->upload_files(($client_data['id']>0)?$client_data['id']:"");
+					
+					if(isset($response['profile_image']))
+					{
+						$image_file['profile_image'] = $response['profile_image'];
+						if(isset($response['profile_thumb']))
+							$image_file['profile_thumb'] = $response['profile_thumb'];
+						$image_file['id']=$insert_id;
+						
+						if($this->db_handler->save('clients',$image_file))
+						{
+							if(isset($old_profile_image) && file_exists(CLIENT_IMAGE_PATH .$old_profile_image))
+							{
+								unlink(CLIENT_IMAGE_PATH .$old_profile_image);
+								
+								//extract thumbnail image from old image								
+								$thumb_image = explode('.',$old_profile_image);
+								$thumb_image_ext =end($thumb_image);
+								array_pop($thumb_image);
+								$thumb_image	= implode('.',$thumb_image);
+								$thumb_image.="_thumb.".$thumb_image_ext;
+								 
+								if(file_exists(CLIENT_THUMB_PATH .$thumb_image))
+									unlink(CLIENT_THUMB_PATH.$thumb_image);
+								$image_upload_message="image of client uploaded";
+								if(!empty($image_file['profile_thumb'] ))
+									$thumb_message	="thumbnail of new image saved";
+							}
+						}
+						else
+						{
+							if(file_exists(CLIENT_IMAGE_PATH.$image_file['profile_image']))
+								unlink(CLIENT_IMAGE_PATH.$image_file['profile_image']);
+								//extract thumbnail image from old image								
+								$thumb_image = explode('.',$image_file['profile_image']);
+								$thumb_image_ext =end($thumb_image);
+								array_pop($thumb_image);
+								$thumb_image	= implode('.',$thumb_image);
+								$thumb_image.="_thumb.".$thumb_image_ext;
+								
+							if(file_exists(CLIENT_THUMB_PATH .$thumb_image))
+									unlink(CLIENT_THUMB_PATH.$thumb_image);									
+							$thumb_message	="thumbnail could not be saved";	
+							$image_upload_message="image could not be saved";						
+						}
+					}
+					else
+					{
+							if(isset($response['image_thumb_message']))
+								$thumb_message	  =	$response['image_thumb_message'];			
+
+							$image_upload_message   = 	$response['image_upload_message'];
+					}
+					
+					
+					if($client_data['id']>0)
+					{
+						$this->session->set_flashdata('success_message','Client updated successfully   '.$image_upload_message."   ".$thumb_message);
+					}
+					else
+					{
+						$this->session->set_flashdata('success_message','Client created successfully   '.$image_upload_message."   ".$thumb_message);
+					}
+										
+					redirect('admin/clients');
+				}
+				else
+				{
+					if($client_data['id'] > 0)
+						$this->data['error_message']='Database Error: Client could not be updated   '.$image_upload_message."   ".$thumb_message;
+					else
+					{
+						$this->data['error_message']='Database Error: Client could not be created   '.$image_upload_message."   ".$thumb_message;				
+					}
+				}
+			}
+			else
+			{
+				$this->data['error_message']='Please Enter correct information';	
+			}
+		}
+		$this->data['security_questions']=$this->db_handler->get('security_questions');
+		$this->data['countries']			=	$this->db_handler->get('countries');		
+		$this->template->load('main','admin/client/form',$this->data);
+	}
+
+
+	public function change_status($action,$id)
+	{		
+		if(!empty($id) && !empty($action))
+		{
+			if(($action == "block" || $action == "delete"))
+			{
+				$allowed	   =  $this->db_handler->is_allowed("client",$id,$action);
+				if(empty($allowed))
+				{
+					$this->session->set_flashdata('error_message',"Could not $action client. Client is involved in one or more active jobs");
+					redirect('admin/clients');
+				}
+			}
+			$data['id']	=	$id;
+			switch($action)
+			{
+				case "active":
+								$activate_jobs	 =	TRUE;
+								$data['status']	=	'Active';
+								break;
+				case "block":
+								$remove_jobs       =	TRUE;
+								$data['status']	=	'Blocked';
+								break;
+				case "delete":
+								$remove_jobs       =	TRUE;
+								$data['status']	=	'INACTIVE';
+								break;
+				default:
+					$this->session->set_flashdata('error','Invalid status');
+				redirect('admin/clients');
+			}
+			if($update_id=$this->db_handler->save('clients',$data))
+			{
+				$job_message	=	"";
+				if(!empty($activate_jobs))
+				{
+					$jobs_status	=	$this->activate_jobs($id);
+					$job_message	=	" Client's inactive jobs activated with $jobs_status errors";					
+				}
+				else if(!empty($remove_jobs))
+				{
+					$jobs_status	=	$this->delete_jobs($id);
+					$job_message	=	"client's waiting jobs deleted with $jobs_status errors";
+				}
+				$this->session->set_flashdata('success_message','Status updated'.$job_message);
+			}
+			else
+				$this->session->set_flashdata('error_message','Status could not be updated');
+		}
+		else
+			$this->session->set_flashdata('error_message','Invalid request!!');
+			
+		redirect('admin/clients');
+	
+	}
+	private function delete_jobs($client_id)
+	{
+		$errors=0;
+		if(!empty($client_id))
+		{
+			$where=array();
+			$where['client_id'] = $client_id;
+			$where['status']	= "Waiting";
+			$client_jobs=$this->db_handler->get('jobs',$where);			
+			foreach($client_jobs as $job)
+			{
+				$job['status'] = 'INACTIVE';
+				if(!$this->db_handler->save('jobs',$job))
+					$errors++;
+				$this->db_handler->delete('jobs_agents',array('job_id'=>$job['id']));
+			}
+		}
+		return $errors;
+	}
+	private function activate_jobs($client_id)
+	{
+		$errors=0;
+		if(!empty($client_id))
+		{
+			$where["client_id"] = $client_id;
+			$where["status"] 	= 'INACTIVE';
+			$client_jobs=$this->db_handler->get('jobs',$where);
+			foreach($client_jobs as $job)
+			{
+				$job['status'] = 'Waiting';
+				if(!$this->db_handler->save('jobs',$job))
+					$errors++;
+			}
+			$this->db_handler->update_expired_jobs();
+		}
+		return $errors;
+	}
+	public function deleted()
+	{
+		$current_url=explode('/',current_url());
+		array_pop($current_url);
+		$current_url[]='list_datatable?deleted=1';
+		$this->data['list_url']=implode('/',$current_url);
+		$this->template->load('main','admin/client/client_listing',$this->data);		
+	}
+	
+	public function client_jobs($client_id="")
+	{
+		$return_array  = array();
+		$list_data     = array();
+		if(($paged_data =	$this->input->post()) && !empty($client_id))
+		{
+			if(isset($paged_data['sEcho']))
+				$return_array['sEcho'] 				=	$paged_data['sEcho'];
+	
+			$where=array();
+			$search_term  =  isset($paged_data['sSearch'])?$paged_data['sSearch']:"";
+			$order_by     =  isset($paged_data['sSortDir_0'])?"id ".$paged_data['sSortDir_0']:"id desc";
+			$offset	   =  isset($paged_data['iDisplayStart'])?$paged_data['iDisplayStart']:0;
+			$limit		=  isset($paged_data['iDisplayLength'])?$paged_data['iDisplayLength']:LIST_PAGE_RECORDS;
+			$where['jobs.client_id']	=	$client_id;
+			if(!empty($paged_data['sSearch_3']))
+			{
+				$where['jobs.status']=$paged_data['sSearch_3'];
+			}
+			
+			$result_set   =  $this->db_handler->list_data_paged('jobs',$search_term,$offset,$limit,$order_by,$where,TRUE);
+			$status_str;
+			if(isset($result_set['total']))
+			{
+				$return_array['iTotalRecords'] = $result_set['total'];
+				unset($result_set['total']);
+			}
+			else
+				$return_array['iTotalRecords'] = 0;
+
+			if(isset($return_array['iTotalRecords']))
+				$return_array['iTotalDisplayRecords'] =	isset($return_array['iTotalRecords'])?$return_array['iTotalRecords']:0;
+	
+		
+			foreach($result_set as $row)
+			{
+				$name_email=(isset($row['first_name']) && isset($row['last_name']))?$row['first_name']." ".$row['last_name']:"";
+				$name_email.=(isset($row['email'])?"( ".$row['email']." )":"");
+				$title=(isset($row['title']))?$row['title']:"";
+				$job_status=(isset($row['status']))?$row['status']:"";
+					
+				$destination_address=(isset($row['destination_address_line1']))?$row['destination_address_line1']:"";
+				$destination_address.=", ".(isset($row['destination_address_line2']))?$row['destination_address_line2']:"";
+				$destination_address.=", ".(isset($row['destination_address_line3']))?$row['destination_address_line3']:"";
+				$destination_address.=", ".(isset($row['destination_address_line4']))?$row['destination_address_line4']:"";
+					
+				if(isset($row['status']))
+					switch($row['status'])
+					{
+						case 'Waiting':
+									$status_str="<span class='label label-warning'>".$row['status']."</span>";
+									break;
+						case 'Awarded':
+									$status_str="<span class='label label-success'>".$row['status']."</span>";
+									break;
+						case 'Collected':
+									$status_str="<span class='label label-success'>".$row['status']."</span>";
+									break;
+						case 'Completed':
+									$status_str="<span class='label label-success'>".$row['status']."</span>";
+									break;
+						case 'INACTIVE':
+									$status_str="<span class='label label-inverse'>".$row['status']."</span>";
+									break;
+						case 'EXPIRED':
+									$status_str="<span class='label label-important'>".$row['status']."</span>";
+									break;
+									
+						default:
+									break;
+
+					}
+					$list_data[]=array($title, $destination_address, $name_email, $status_str);
+				}
+			}
+			header('Content-type: application/json');
+			$return_array['aaData']	=	$list_data;
+			echo json_encode($return_array);
+			exit;
+	
+	}
+	public function list_datatable()
+	{
+		$return_array=array();
+		$list_data=array();
+		
+		$paged_data =	$this->input->post();
+		
+		$where=array();
+		if(isset($paged_data['sEcho']))
+			$return_array['sEcho'] 				=	$paged_data['sEcho'];
+
+		$search_term  =  isset($paged_data['sSearch'])?$paged_data['sSearch']:"";
+		$order_by     =  isset($paged_data['sSortDir_0'])?"id ".$paged_data['sSortDir_0']:"id desc";
+		$offset	   =  isset($paged_data['iDisplayStart'])?$paged_data['iDisplayStart']:0;
+		$limit		=  isset($paged_data['iDisplayLength'])?$paged_data['iDisplayLength']:LIST_PAGE_RECORDS;
+	
+		if($is_deleted=$this->input->get('deleted'))
+		{
+			$where['clients.status']='INACTIVE';
+			$client_deleted = TRUE;
+		}
+		else if(!empty($paged_data['sSearch_5']))
+		{
+			$where['clients.status']=$paged_data['sSearch_5'];
+			$client_deleted = TRUE;
+		}
+		 else if(!empty($paged_data['sSearch_0']))
+  {
+   $date_range  =  explode("~",$paged_data['sSearch_0']);
+   if(!empty($date_range[0]) && !empty($date_range[1]))
+    $where['where_string'][]= " clients.created_date BETWEEN '".date('Y-m-d',strtotime($date_range[0]))."' AND DATE_ADD('".date('Y-m-d',strtotime($date_range[1]))."', INTERVAL 1 DAY)";
+  }
+		$result_set   =  $this->db_handler->list_data_paged('clients',$search_term,$offset,$limit,$order_by,$where,(!empty($client_deleted)?TRUE:FALSE));
+	
+	
+		$status_str;
+		
+		if(isset($result_set['total']))
+		{
+			$return_array['iTotalRecords'] = $result_set['total'];
+			unset($result_set['total']);
+		}
+		else
+			$return_array['iTotalRecords'] = 0;
+
+		if(isset($return_array['iTotalRecords']))
+			$return_array['iTotalDisplayRecords'] =	isset($return_array['iTotalRecords'])?$return_array['iTotalRecords']:0;
+
+    
+		foreach($result_set as $row)
+		{
+			
+				////$name=(isset($row['first_name']) && isset($row['last_name']))?$row['first_name']." ".$row['last_name']:"";
+				
+				$name=(isset($row['first_name']) && isset($row['last_name']))?"<a href='".site_url('admin/clients/profile/'.$row['id'])."'>".$row['first_name']." ".$row['last_name']."</a>":"";
+				$contact="Telephone (".(!empty($row['telephone'])?$row['telephone']:"");
+				$contact.=") Mobile(".(!empty($row['mobile'])?$row['mobile']:"");
+				$contact.=")";
+				$address=(!empty($row['address_line1'])?$row['address_line1']:"");
+				$address.=(!empty($row['address_line2'])?" ,  ".$row['address_line2']:"");
+				$address.=(!empty($row['address_line3'])?" ,  ".$row['address_line3']:"");
+				$address.=(!empty($row['address_line4'])?" ,  ".$row['address_line4']:"");
+			
+				$actions_str="<p class='about'><a href='".site_url('admin/clients/save/'.$row['id'])."'><span title='Edit'>
+			<img src='".site_url('application/assets/img/icons/edit.png')."'></span></a>";
+				$delete_str="<a href='".site_url('admin/clients/change_status/delete/'.$row['id'])."'><span  title='Inactive'>
+			<img src='".site_url('application/assets/img/icons/inactive.png')."'>
+			</span></a>"; 											
+											if(isset($row['status']))
+												switch($row['status'])
+												{
+													case 'Blocked':
+										$status_str="<span class='label label-important'>".$row['status']."</span>";
+                                        $actions_str.=$delete_str."<a  href='".site_url('admin/clients/change_status/active/'.$row['id'])."'><span  title='Activate'>
+										<img src='".site_url('application/assets/img/icons/active.png')."'></span></a>";
+														break;
+													case 'INACTIVE':
+										$status_str="<span class='label label-important'>".$row['status']."</span>";
+                                        $actions_str.="<a  href='".site_url('admin/clients/change_status/active/'.$row['id'])."'><span  title='Activate'>
+										<img src='".site_url('application/assets/img/icons/active.png')."'></span></a>";
+														break;
+													case 'Active':
+										$status_str="<span class='label label-success'>".$row['status']."</span>";
+                                        $actions_str.=$delete_str."<a  href='".site_url('admin/clients/change_status/block/'.$row['id'])."'><span title='Block'>
+										<img src='".site_url('application/assets/img/icons/block.png')."'></span></a>";
+														break;
+													case 'Pending':
+										$status_str="<span class='label label-warning'>".$row['status']."</span>";
+                                        $actions_str.=$delete_str."<a  href='".site_url('admin/clients/change_status/block/'.$row['id'])."'><span title='Block'>
+										<img src='".site_url('application/assets/img/icons/block.png')."'></span></a>";
+                                        $actions_str.="<a  href='".site_url('admin/clients/change_status/active/'.$row['id'])."'><span  title='Activate'>
+										<img src='".site_url('application/assets/img/icons/active.png')."'></span></a>";
+														break;
+													default:
+															break;
+												}
+                                        $actions_str.="</p>";
+										
+				$list_data[]=array($row['id'],$name,$row['email'],$contact,$address,$status_str,$actions_str);
+		}
+		
+		header('Content-type: application/json');
+		$return_array['aaData']	=	$list_data;
+		echo json_encode($return_array);
+		exit;
+	}
+	
+
+	private function upload_files($id="")
+	{
+		$admin=$this->session->userdata('admin');
+		$user_id=$admin['user_id'];
+		$user_id=1; //session data
+		$return_data['image_upload_message']  =	"No file Uploaded";
+		$return_data['image_thumb_message']   =	'No thumb created';
+		$return_data['thumb_error']		   =	'1';
+
+		if(isset($_FILES['profile_image']['name']) && !empty($_FILES['profile_image']['name']) && !empty($user_id))
+		{
+			$file_ext=explode('.',$_FILES['profile_image']['name']);
+			$file_ext=isset($file_ext[count($file_ext)-1])?$file_ext[count($file_ext)-1]:"";
+			$type=$this->file_type($file_ext);
+			if(!empty($file_ext) && $type=="Image")
+			{
+				if (!is_dir(CLIENT_IMAGE_PATH)) 
+					mkdir(CLIENT_IMAGE_PATH, 0777, TRUE);
+				$config=array();
+				$config['upload_path']		= 	CLIENT_IMAGE_PATH;
+				$config['allowed_types']	  =    CLIENT_IMAGE_TYPE;
+				$config['max_size']		   =    CLIENT_IMAGE_SIZE ;
+				$id=$user_id;
+						
+				$config['file_name']	= $id."_".md5(time());
+				
+				$this->load->library('upload', $config);
+			
+				if (!$this->upload->do_upload('profile_image'))
+				{
+					$response = array('error' => $this->upload->display_errors());
+				}
+				else
+				{
+					$response		  			= 	(array)$this->upload->data();
+					$response['profile_thumb']   =	$response['raw_name'].'_thumb'.$response['file_ext'];
+					$thumb_response		      =	$this->make_thumb($response['file_name']);
+				}
+				//$response=$this->upload_files((isset($data['id'])?$data['id']:""));//merge code here
+				if(isset($response['file_name']) && isset($response['file_ext']))
+				{
+					if(isset($thumb_response['image_thumb_message']))
+						$return_data['image_thumb_message']	=	$thumb_response['image_thumb_message'];
+					if(isset($thumb_response['thumb_error']))
+					{
+						$return_data['thumb_error']		  =	$thumb_response['thumb_error'];
+						if($thumb_response['thumb_error']=='0' && isset($response['profile_thumb']))
+							$return_data['profile_thumb']	=	$response['profile_thumb'];
+					}
+					$return_data['profile_image']			=	$response['file_name'];
+				}
+				else if(isset($response['error']))
+					$return_data['image_upload_message'] =	$response['error'];
+				else
+					$return_data['image_upload_message'] =	"some error in image uploading.";
+			}
+			else
+					$return_data['image_upload_message'] ="file type not recognized.";
+		}
+		return $return_data;
+	}
+	private function make_thumb($image_name)
+	{			
+		if(!empty($image_name))
+		{
+			$this->load->library('image_lib');
+						
+			$config['image_library'] 		 =    'gd2';			
+			$config['width']				 =	CLIENT_THUMB_WIDTH;
+			$config['height']				=	CLIENT_THUMB_HEIGHT;
+			$config['new_image']			 =	CLIENT_THUMB_PATH;
+			$config['source_image']		  = 	CLIENT_IMAGE_PATH.$image_name;
+			$config['create_thumb']		  =	TRUE;
+			$config['maintain_ratio']		=	FALSE ;
+			
+			$this->image_lib->initialize($config); 
+			
+			if (!$this->image_lib->resize())
+			{ 
+				$return_data['image_thumb_message']	=	$this->image_lib->display_errors();
+			}				
+			else
+			{
+				$return_data['image_thumb_message']	=	'thumb created successfully';	
+				$return_data['thumb_error']			=	'0';
+			}
+			$this->image_lib->clear();
+		}
+		return $return_data;
+	}
+	
+	private function file_type($ext)
+	{
+		$type="";
+		switch($ext)
+		{
+			case "gif"	:
+			case "jpeg"   :
+			case "jpg"	:
+			case "png"	:
+			case "bmp"	:
+							$type="Image";
+							break;
+			default:
+							break;
+		}
+		return $type;
+	}
+
+}

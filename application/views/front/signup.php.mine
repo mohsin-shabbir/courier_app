@@ -1,0 +1,206 @@
+<?php
+	//$get_address_uk	=	(isset($get_address_uk)?$get_address_uk:"");
+	$get_address_uk	=	site_url('user/get_address_uk');
+?>
+
+<div class="container container-top-padding margin-bottom">
+<style>
+.errorDivUkCode 
+	{
+		display:none;
+	}
+	.error_red
+	{
+		color:red !important;
+	}
+@charset "utf-8";
+/* CSS Document */
+</style>
+<script type="text/javascript">
+$(document).ready( function(){ 
+	$(".cb-enable").click(function(){
+		var parent = $(this).parents('.switch');
+		$('.cb-disable',parent).removeClass('selected');
+		$(this).addClass('selected');
+		$('.checkbox',parent).attr('checked', true);
+	});
+	$(".cb-disable").click(function(){
+		var parent = $(this).parents('.switch');
+		$('.cb-enable',parent).removeClass('selected');
+		$(this).addClass('selected');
+		$('.checkbox',parent).attr('checked', false);
+	});
+});
+</script>
+<style type="text/css">
+	
+
+
+	/* Used for the Switch effect: */
+	.cb-enable, .cb-disable { width:auto !important; float:none; padding:0 !important; margin:0 !important; font-size:12px !important;}
+	.cb-enable, .cb-disable, .cb-enable span, .cb-disable span { background: url(<?php echo base_url();?>application/assets/front/images/switch.gif) repeat-x; display: block; float: left; }
+	.cb-enable span, .cb-disable span { line-height: 30px; display: block; background-repeat: no-repeat; font-weight: bold; }
+	.cb-enable span { background-position: left -90px; padding: 0 10px; }
+	.cb-disable span { background-position: right -180px;padding: 0 10px; }
+	.cb-disable.selected { background-position: 0 -30px; }
+	.cb-disable.selected span { background-position: right -210px; color: #fff; }
+	.cb-enable.selected { background-position: 0 -60px; }
+	.cb-enable.selected span { background-position: left -150px; color: #fff; }
+	.switch label { cursor: pointer; }
+</style>
+<script type="text/javascript">
+	function hide_agent()
+	{
+		$("#signup_form_div").hide(1000);
+		$("#signup_form_div").html('');
+		$.ajax({
+			url:"<?Php echo site_url('client/signup/'); ?>",
+			type:'post',
+			data:{client_form:'1'},
+			success: function(msg){
+				if(typeof msg !='undefined')
+				{
+					$("#signup_form_div").html(msg);
+					$("#signup_form_div").show(1000);
+				}
+			},
+			error:function(msg){
+				
+			}
+		});
+	}
+	function hide_client()
+	{
+		$("div.agent_form_div").find(':input').each(function(index, element) {
+            $(this).attr('disabled',false);
+        });
+		$(".agent_form_div").show();
+		$(".client_form_div").hide();
+		$("div.client_form_div").find(':input').each(function(index, element) {
+            $(this).attr('disabled',true);
+        });
+	}
+</script>
+<?php
+	$ci_error	     =	((set_value('addressUkCode1'))?TRUE:FALSE); 
+	$id	   		   =	(set_value('id'))?set_value('id'):(isset($data['id'])?$data['id']:'-1'); 
+	$salutation	   =	(set_value('salutation'))?set_value('salutation'):(isset($data['salutation'])?$data['salutation']:''); 
+	$first_name	   =	(set_value('first_name'))?set_value('first_name'):(isset($data['first_name'])?$data['first_name']:''); 
+	$last_name		=	(set_value('last_name'))?set_value('last_name'):(isset($data['last_name'])?$data['last_name']:''); 
+	$company_name     =	(set_value('company_name'))?set_value('company_name'):(isset($data['company_name'])?$data['company_name']:''); 
+	$post_code		=	(set_value('addressUkCode1'))?set_value('addressUkCode1'):(isset($data['post_code'])?$data['post_code']:''); 
+	$address_line1    =	(set_value('house_numberUkCode1'))?set_value('house_numberUkCode1'):(isset($data['address_line1'])?$data['address_line1']:''); 
+	$address_line2    =	(set_value('streetUkCode1'))?set_value('streetUkCode1'):(isset($data['address_line2'])?$data['address_line2']:''); 
+	$address_line3    =	(set_value('townUkCode1'))?set_value('townUkCode1'):(isset($data['address_line3'])?$data['address_line3']:''); 
+	$address_line4    =	(set_value('countyUkCode1'))?set_value('countyUkCode1'):(isset($data['address_line4'])?$data['address_line4']:''); 
+	$latitude         =	(set_value('latitudeUkCode1'))?set_value('latitudeUkCode1'):(isset($data['latitude'])?$data['latitude']:''); 
+	$longitude		=	(set_value('longitudeUkCode1'))?set_value('longitudeUkCode1'):(isset($data['longitude'])?$data['longitude']:''); 
+	$country_id	   =	(set_value('country_id'))?set_value('country_id'):(isset($data['country_id'])?$data['country_id']:''); 
+	$telephone		=	(set_value('telephone'))?set_value('telephone'):(isset($data['telephone'])?$data['telephone']:''); 
+	$mobile           =	(set_value('mobile'))?set_value('mobile'):(isset($data['mobile'])?$data['mobile']:''); 
+	$email            =	(set_value('email'))?set_value('email'):(isset($data['email'])?$data['email']:''); 
+	$password         =	(set_value('password'))?set_value('password'):(isset($data['password'])?$data['password']:''); 
+	$confirm_password =	(set_value('confirm_password'))?set_value('confirm_password'):(isset($data['password'])?$data['password']:''); 
+	$created_date     =	(set_value('created_date'))?set_value('created_date'):(isset($data['created_date'])?$data['created_date']:date('Y-m-d')); 
+	$last_update      =	(set_value('last_update'))?set_value('last_update'):date('Y-m-d h:i:s'); 
+    $old_profile_image=    (set_value('old_profile_image'))?set_value('old_profile_image'): (isset($data['profile_image'])?$data['profile_image']:"");
+	$question_id	  =	(set_value('security_question'))?set_value('security_question'):(isset($data['security_question'])?$data['security_question']:''); 
+	$security_answer  =	(set_value('security_answer'))?set_value('security_answer'):(isset($data['security_answer'])?$data['security_answer']:''); 
+	$preferred_cities =	(isset($data['preferred_cities'])? explode('@',$data['preferred_cities']):array()); 
+	$experience_year  =	(set_value('experience_year'))?set_value('experience_year'):(isset($data['experience_year'])? $data['experience_year']:0); 
+	$experience_month =	(set_value('experience_month'))?set_value('experience_month'):(isset($data['experience_month'])? $data['experience_month']:0); 
+	$status		   =	(set_value('status'))?set_value('status'):(isset($data['status'])? $data['status']:"Active"); 
+	
+	?>
+    
+<div class="bredcrumb">
+	<ul>
+    	<li><a href="index.php">Home</a></li>
+        <li>Register</li>
+    </ul>
+    <div class="clear"></div>
+</div>   <!-- breadcrumb -->
+<section id="signup" >
+	<div class="simple-panel">
+    	<div class="panel-content">
+    	<h2>Sign up :</h2>
+        
+        <div class="login-form signup-form">
+        	<div class="row">
+                	<div class="col-sm-12">
+                        <div class="form-group">
+                        
+                            <label>I'm:</label>
+                            
+                             <div class="form-field type-select">
+                            <p class="switch">
+                                    <input type="radio" id="radio1" name="level" value="3" onClick="return hide_agent()" style="display:none" checked />
+                                    <input type="radio" id="radio2" name="level" value="2" style="display:none"  onClick="return hide_client()"  />
+                                    <label for="radio1" class="cb-enable selected"><span>Client</span></label>
+                                    <label for="radio2" class="cb-disable"><span>Service Provider</span></label>
+									</p>
+                                </div> 
+                            <div class="clear"></div>
+                        </div> <!-- form group -->
+                    </div>
+                    
+                </div>
+        	
+            <div id="signup_form_div">
+            	&nbsp;
+            </div>
+           
+            
+        </div> <!-- login form -->
+      </div> <!-- panel content -->
+        
+        
+        
+        <div class="clear"></div>
+    </div> <!-- simple panel -->
+</section>  
+
+</div>
+<input type="hidden" name="get_address_uk" id="get_address_uk" value="<?php echo $get_address_uk; ?>" />
+<script>
+		var url   = "<?php echo site_url('admin/agents/uniqueLogin'); ?>";
+		var form  = 'validation';
+		var type = 'agents';
+		jQuery(function(){
+		//jQuery('#email').on('blur',function(){validateUnique(form,url,type);});
+	
+		/* jQuery('#country_code').on('change',function(){
+		
+			jQuery("#preferred_cities").html('');
+			jQuery('#preferred_cities').trigger("chosen:updated");
+			
+			jQuery.ajax({
+				url:"<?php echo site_url('admin/agents/get_cities'); ?>",
+				dataType:"json",
+				data:{country_code:jQuery("#country_code").val()},
+				type:"POST",
+				success: function(data){
+					
+					if(jQuery.isArray(data))
+						for(var i=0; i<data.length; i++)
+						{
+							if(typeof data[i]['id'] != 'undefined' && typeof data[i]['name'] != 'undefined')
+								jQuery("#preferred_cities").append("<option value='"+data[i]['id']+"' >"+data[i]['name']+"</option>");
+						}
+						jQuery("#preferred_cities").trigger("chosen:updated");
+						console.log(data);
+					},
+				error: function(msg){
+					console.log(msg);
+					}
+				});
+			
+		
+		}); */
+		
+		});
+		
+
+
+		
+	</script>

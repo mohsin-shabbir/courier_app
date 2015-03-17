@@ -1,0 +1,30 @@
+#contact .container-wrapper { background:url(../images/contact-section-bg.png) repeat; }
+.search-form .search-field { padding:7px 18px; line-height:100%; }
+.navbar-nav > li > a { padding:24px 13px !important; }
+.navbar-nav > li > a.two-lines { padding:16px 13px !important; }
+.quote-form .select-field { width:180px; padding:5px 5px 10px 10px; }
+
+.owl-carousel {width: 1024px; height:560px;}
+#main-slider { height:auto; padding-top:68px;  }
+.owl-item .item { height:560px ;}
+.bx-wrapper .bx-next {
+	right: 10px;
+	}
+#slider1 { z-index:1; position:relative; }
+#slider1 li img { max-width:100%; }
+#slider1, #slider1 li { height:550px; }
+
+#myCarousel { padding-top:0; }
+.carousel-control { height:auto; }
+.carousel-control .icon-prev { height:64px !important; }
+.carousel-control .icon-next { height:64px !important; }  
+
+.carousel-control.right, .carousel-control.left { filter:none; }
+#myCarousel { overflow-y:hidden; }  
+#page-background {position:absolute; z-index:-1}
+
+.hidden-ie { display:none !important; }
+
+.signup-form select.field, .post-job select.field, .vat-form select.field { padding-right:0 !important; padding-top:5px; padding-bottom:5px; }
+.post-job-form .field { border:1px solid #ccc;/* padding:15px 10px 15px;*/ height:35px; float:left; line-height:40px;  }
+.post-job-form label { float:left; }

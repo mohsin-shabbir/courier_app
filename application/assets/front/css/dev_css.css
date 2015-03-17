@@ -1,0 +1,22 @@
+@charset "utf-8";
+/* CSS Document */
+
+.searchBox
+{
+	border:2px solid #e4e4e4; 
+	background-color:#e9e9e9;
+}
+.assignAgentBox
+{
+	border:2px solid #d2d2d2; 
+	background-color:#f9f9f9;
+}
+.rightDiv
+{
+	 margin-left:0; 
+	 text-align:center
+}
+.alignCenter
+{
+	text-align:left;
+}
