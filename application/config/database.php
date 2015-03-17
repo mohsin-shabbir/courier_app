@@ -49,16 +49,16 @@ $active_group = 'default';
 $active_record = TRUE;
 
 ////////////////////////////////////////////Local Database//////////////////////////////
-$db['default']['hostname'] = 'localhost';
+/*$db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'root';
 $db['default']['password'] = '';
-$db['default']['database'] = 'courier_apps';
+$db['default']['database'] = 'courier_apps';*/
 ////////////////////////////////////////////Live Database//////////////////////////////
-/*$db['default']['hostname'] = 'localhost';
+$db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'localuser';
 $db['default']['password'] = 'mobit9gf7*uyu%^';
 $db['default']['database'] = 'courier_apps';
-*/
+
 
 
 $db['default']['dbdriver'] = 'mysql';

@@ -1,9 +1,9 @@
 RewriteEngine On
 
 #Live
-#RewriteBase /mohsin/courier-app/
+RewriteBase /mohsin/courier-appv6/
 #Local
-RewriteBase /courier_app/
+#RewriteBase /courier_app/
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

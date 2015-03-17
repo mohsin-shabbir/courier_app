@@ -16,10 +16,10 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://localhost/courier_app';
+//$config['base_url']	= 'http://localhost/courier_app';
 ////*/
 ///$config['base_url']	= 'http://localhost/courier_app/';
-//$config['base_url']	= 'http://198.50.129.105/mohsin/courier-appv5/';
+$config['base_url']	= 'http://198.50.129.105/mohsin/courier-appv6/';
 
 
 
