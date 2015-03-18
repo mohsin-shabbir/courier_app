@@ -4,13 +4,13 @@
        <iframe src="https://www.google.com/maps/embed?pb=!1m27!1m12!1m3!1d108865.56945480309!2d74.23491264626213!3d31.49533568811008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m12!1i0!3e6!4m5!1s0x391903f963e1b891%3A0x36490e5d7ddd65e!2zRkFJU0FMIFRPV04g2YHbjNi12YQg2bnYp9mI2ZTZhg!3m2!1d31.483333!2d74.3!4m3!3m2!1d31.492847299999998!2d74.2936208!5e0!3m2!1sen!2s!4v1424428716620" width="600" height="600" frameborder="0" style="border:0" id="google-map"></iframe>
         <div class="container-wrapper">
             <div class="container">
-            	<div class="section-header text-center">
+            	<div class="section-header text-center" data-animate-scroll='{"rotationY":"360", "duration": "1"}'>
                     <div class="section-title-shape">
                         <h2 class="section-title text-center text-white">Get in touch</h2>
                     </div>
                 </div>
                 <div class="">
-                    <div class="col-sm-4">
+                    <div class="col-sm-4" data-animate-scroll='{"x": "-150","rotationY":"-100", "duration": "2"}'>
                         <div class="contact-info"> 
                             <ul class="address">
                             	<li class="location-icon icon">
@@ -22,7 +22,7 @@
                             </ul>
                         </div> <!-- contact info -->
                     </div> <!-- column -->
-                    <div class="col-sm-8">
+                    <div class="col-sm-8" data-animate-scroll='{"x": "150","rotationY":"100", "duration": "2"}'>
                     	<div class="row">
 						<div class="contact-form">
 	
@@ -54,16 +54,25 @@
                                         </div>
                                         
                                     </div>
-                                    <div class="col-sm-6">   
-                                        <div class="form-group">
-                                            <img src="<?php echo base_url(); ?>application/assets/front/images/captcha-placeholder.png" class="img-responsive">
-                                        </div>
-                                        <div class="form-group">
-                                        	<label>Security Code:</label>
-                                            <input type="text" name="name" id="name" required class="form-control txt-field" placeholder = "Name" onfocus="(this.value == 'Name') && (this.value = '')"  onblur="(this.value == '') && (this.value = 'Name')" data-parsley-trigger="change" >
-                                        </div>
-                                        <input type="submit" class="btn btn-primary" value="Send Message">
-                                        </div> <!-- column -->    
+                                    <div class="col-sm-12">
+                                    	<div class="row">
+                                        	<div class="col-sm-6">   
+                                                <div class="form-group">
+                                                	<label>Security Code:</label>
+                                                    <img src="<?php echo base_url(); ?>application/assets/front/images/captcha-placeholder.png" class="img-responsive">
+                                                </div>
+                                            </div> <!-- column -->
+                                            
+                                            <div class="col-sm-6">   
+                                                <div class="form-group">
+                                                    <label>Write Code Here:</label>
+                                                    <input type="text" name="name" id="name" required class="form-control txt-field" placeholder = "Security code " onfocus="(this.value == 'Name') && (this.value = '')"  onblur="(this.value == '') && (this.value = 'Name')" data-parsley-trigger="change" >
+                                                </div>
+                                                <input type="submit" class="btn btn-primary" value="Send Message">
+                                            </div> <!-- column -->
+                                             
+                                        </div><!--end row-->
+                                    </div><!--end col-12-->
                                
                             </form>
                         </div> <!-- contact form -->

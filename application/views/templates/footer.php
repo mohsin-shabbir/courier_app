@@ -102,15 +102,11 @@ if(typeof all_checkbox != "undefined")
 	});
 }
 
-
-
 //submit form function
 jQuery(".validation_form_UkCode").on("submit",function(e){
 		
 		var editor=jQuery(this).find(".required_wysiwyg");
 		var chosen_select=jQuery(this).find(".chosen-select");
-		
-		 
 		if(jQuery(this).validationEngine('validate'))
 		{
 			if(typeof chosen_select != "undefined")
@@ -139,6 +135,52 @@ jQuery(".validation_form_UkCode").on("submit",function(e){
 				}
 			}
 			
+			if(typeof group_input != "undefined")
+			{
+				jQuery(group_input).each(function() {
+					
+					group_input_flag=0;
+					var input_fields=jQuery(this).find('input[type="text"]');
+					var checkbox_fields=jQuery(this).find('input[type="checkbox"]');
+					jQuery(input_fields).each(function(){
+
+						if(jQuery(this).val() != "" )
+						{
+							group_input_flag=1;	
+							return;
+						}
+                    });
+
+					jQuery(checkbox_fields).each(function(){
+
+						if(jQuery(this).is(':checked'))
+						{
+							group_input_flag=1;
+							return;	
+						}
+                    });
+
+
+					
+					if(group_input_flag==0)
+					{
+						if(typeof input_fields != "undefined")
+						{
+							jQuery(input_fields).focus();
+						}
+						else if(typeof checkbox_fields != "undefined")
+						{
+							jQuery(checkbox_fields).focus();
+						}
+						e.preventDefault();
+						alert('please select atleast one checkbox or enter some value in the textbox');
+						return;
+					}
+                });
+				
+				if(group_input_flag == 0)
+					return;
+			}
 			
 			if(typeof editor != "undefined" &&  jQuery(editor).val()=="")
 			{
@@ -167,7 +209,7 @@ jQuery(".validation_form_UkCode").on("submit",function(e){
 				post_code	=	jQuery("#addressUkCode"+counter).val();
 				country_code =	jQuery('#country_code').val();
 
-				if(house_no != "" && street_no !="" && (((longitude == "" || latitude == "" || post_code=="") && country_code == "GB") || ((longitude == "" || latitude == "" ) && country_code != "GB" && country_code != "")))
+				if(house_no != "" && (((longitude == "" || latitude == "" || post_code=="") && country_code == "GB") || ((longitude == "" || latitude == "" ) && country_code != "GB")))
 				{
 					e.preventDefault();
 					var address=house_no+", "+street_no+", "+town_no+", "+county_no;
@@ -217,7 +259,8 @@ jQuery(".validation_form_UkCode").on("submit",function(e){
 			var counter	 =	div_no.slice(-1);
 			 
 			 
-			if(jQuery('#country_code').length)
+			var country_code	=	jQuery('#country_code');
+			if(typeof country_code !== "undefined" && jQuery(country_code).length)
 			{
 				if(jQuery(country_code).val() != "GB")
 				{

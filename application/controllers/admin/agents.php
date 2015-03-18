@@ -91,10 +91,10 @@ class Agents extends MY_Controller
 			$this->form_validation->set_rules('vat_registered', 'VAT Status', 'trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('vat_id', 'VAT ID', 'trim|strip_tags|xss_clean');
 
-			$this->form_validation->set_rules('account_title', 'Account Title', 'required|trim|strip_tags|xss_clean');		
-			$this->form_validation->set_rules('bank_name', 'Bank Name', 'required|trim|strip_tags|xss_clean');		
-			$this->form_validation->set_rules('account_no', 'Account No', 'required|trim|strip_tags|xss_clean');		
-			$this->form_validation->set_rules('branch_code', 'Branch Code', 'required|trim|strip_tags|xss_clean');		
+			$this->form_validation->set_rules('account_title', 'Account Title', 'trim|strip_tags|xss_clean');		
+			$this->form_validation->set_rules('bank_name', 'Bank Name', 'trim|strip_tags|xss_clean');		
+			$this->form_validation->set_rules('account_no', 'Account No', 'trim|strip_tags|xss_clean');		
+			$this->form_validation->set_rules('branch_code', 'Branch Code', 'trim|strip_tags|xss_clean');		
 
 
 			if(!empty($agent_data['country_code']) && (strcmp($agent_data['country_code'],'GB')==0))
@@ -637,6 +637,7 @@ class Agents extends MY_Controller
 	
 	public function upload_files($img_data="")
 	{
+
 		$admin=$this->session->userdata('admin');
 		$user_id							  =	(!empty($admin['user_id'])?$admin['user_id']:1);
 		$return_data						  =	array();
@@ -644,9 +645,13 @@ class Agents extends MY_Controller
 		$return_data['thumb_message']		 =	"";
 		$return_data['thumb_error']		   =	'No thumb created';
 		$return_data['image_error']		   =	'No Image Uploaded';
-		$return_data['error']	  			 =	'1';
+		$return_data['error']	  			 =	'0';
+	
 		if(isset($_FILES['profile_image']['name']) && !empty($_FILES['profile_image']['name']) && !empty($user_id))
 		{
+			$return_data['profile_image'] 		 =	"";
+			$return_data['profile_thumb']		 =	"";		
+			$return_data['error']	  			 =	'1';
 			$file_ext=explode('.',$_FILES['profile_image']['name']);
 			$file_ext=isset($file_ext[count($file_ext)-1])?$file_ext[count($file_ext)-1]:"";
 			if(!empty($file_ext))
@@ -701,11 +706,14 @@ class Agents extends MY_Controller
 			}
 			else
 				$return_data['image_error'] ="file type not recognized.";
+
+			$this->image_data=$return_data;
+			if(!empty($return_data['image_error']))
+				$this->form_validation->set_message('upload_files', $return_data['image_error']);
+			return (!empty($return_data['profile_image'])?TRUE:FALSE);
 		}
 		$this->image_data=$return_data;
-		if(!empty($return_data['image_error']))
-			$this->form_validation->set_message('upload_files', $return_data['image_error']);
-		return (!empty($return_data['profile_image'])?TRUE:FALSE);
+		return TRUE;
 	}
 
 	private function make_thumb($image_name)

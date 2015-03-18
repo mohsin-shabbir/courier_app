@@ -39,8 +39,21 @@ textarea.parsley-error {
   /* background: #F5F5F5; */
   padding: 5px;
 }
+#demo-form .parsley-errors-list.filled {
+  opacity: 1;
+    width: inherit;
+  display: block;
+  position: relative;
+  right: 0;
+  color:#fff;
+}
+#demo-form .form-group{display: inline-block;
+  width: 100%;}
 @media all and (max-width:768px){
 	.parsley-errors-list.filled {
   top: 97%;
   right: 11%;}
+  #demo-form .parsley-errors-list.filled {
+  top: 97%;
+  right: 0;}
 	}
