@@ -225,7 +225,7 @@
                                                 </div>
                                             </div>      
                                             <div class="row-form span12">
-                                                <div class="span3"><span class="txt_red">*</span>Country:</div>
+                                                <div class="span3"><span class="txt_red">*</span>County:</div>
                                                 <div class="span8">
                                                     <input type="text" class="countyUkCode" name="countyUkCode1" id="countyUkCode_hidden1"  value="<?php echo $address_line4; ?>" />
                                                     <span class='error_red'><?php echo form_error('countyUkCode1'); ?></span>

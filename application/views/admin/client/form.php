@@ -148,9 +148,11 @@
                                             <span id="address_errorUkCode1" class="error_red">* Please provide a valid Status </span>
                                         </span>
                                     </div>
-                                    <div class="span5" style="margin-left:27% !important;">
+                                    <div class="span8" style="margin-left:27% !important;">
                                         <a style="text-decoration:underline;" id="findAddressUkCode1" class="findAddressUkCode" href="" >Find Address</a> &nbsp;&nbsp;
                                         <a style="text-decoration:underline;" href="" class="dontKnowUkCode" id="dontKnowUkCode1" > Don't Know? </a>
+                                         &nbsp;&nbsp;
+                                        <a style="text-decoration:underline;" href="http://www.royalmail.com/" target="_blank" > Can't Find </a>
                                     </div>
                                 </div>
                                 <div id='hiddenAddressFieldsUkCode1' class='hiddenAddressFieldsUkCode row-form clearfix <?php if((isset($id) && $id>0) || ($ci_error ==TRUE)) echo ""; else echo "errorDivUkCode"; ?>'>
@@ -185,7 +187,7 @@
                                                 </div>
                                             </div>      
                                             <div class="row-form span12">
-                                                <div class="span3"><span class="txt_red">*</span>Country:</div>
+                                                <div class="span3"><span class="txt_red">*</span>County:</div>
                                                 <div class="span8">
                                                     <input type="text" class="countyUkCode" name="countyUkCode1" id="countyUkCode_hidden1"  value="<?php echo $address_line4; ?>" />
                                                     <span class='error_red'><?php echo form_error('countyUkCode1'); ?></span>
@@ -272,7 +274,7 @@
                                 <div class="row-form clearfix">
                                     <div class="span3">Password:</div>
                                     <div class="span9">        
-                                        <input <?php if(($id < 0)){ ?> class="validate[required,minSize[8]]"  type="password" <?php } else{ echo "type='text'";  } ?>value="<?php echo $password; ?>" name="password" id="password" />
+                                        <input <?php if(($id < 0)){ ?> class="validate[required,minSize[8]]"  type="password" <?php } else{ echo "type='password'";  } ?>value="<?php echo $password; ?>" name="password" id="password" />
                                         <span class='error_red'><?php echo form_error('password'); ?>&nbsp;</span>
                                     </div>
                                 </div>      
