@@ -197,7 +197,7 @@
                 <div class="span4">
                 </div>
                 <div class="span4" style="text-align:center;">
-                <div class="span12"><button class="btn btn-block" type="button">Edit</button></div>
+                <div class="span12"><a class="btn btn-block" href="<?php echo site_url('admin/jobs/save/'.$id); ?>" >Edit</a></div>
                             
                  </div>
                 <div class="span4">
