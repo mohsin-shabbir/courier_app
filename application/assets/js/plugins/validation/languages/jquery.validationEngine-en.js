@@ -69,7 +69,7 @@
                 },
                 "equals": {
                     "regex": "none",
-                    "alertText": "* Fields do not match"
+                    "alertText": "* Passwords do not match"
                 },
                 "creditCard": {
                     "regex": "none",
