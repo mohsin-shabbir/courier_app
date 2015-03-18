@@ -189,6 +189,8 @@
                                     <div class="span5" style="margin-left:27% !important;">
                                         <a style="text-decoration:underline;" id="findAddressUkCode1" class="findAddressUkCode" href="" >Find Address</a> &nbsp;&nbsp;
                                         <a style="text-decoration:underline;" href="" class="dontKnowUkCode" id="dontKnowUkCode1" > Don't Know? </a>
+                                         &nbsp;&nbsp;
+                                        <a style="text-decoration:underline;" href="http://www.royalmail.com/" > Can't Find </a>
                                     </div>
                                 </div>
                                 <div id='hiddenAddressFieldsUkCode1' class='hiddenAddressFieldsUkCode row-form clearfix <?php if((isset($id) && $id>0) || ($ci_error==TRUE)) echo ""; else echo "errorDivUkCode"; ?>'>
