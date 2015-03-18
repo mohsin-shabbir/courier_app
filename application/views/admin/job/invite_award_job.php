@@ -47,15 +47,13 @@
 	<?php } ?>
             </div>
             <div class="row-fluid">
-            <div class="span4">
-           		<b> Search Agent By Destination's Postal Code	</b>
+            <div class="span6">
+           		<b> Search Agent By Destination's Postal Code</b>
                 <div class="span12" id="status_filter">
                 		
                 </div>
                 </div>
-             </div>   
-			<div class="row-fluid">
-            	<div class="span12">
+            <div class="span6">
                     <div class="span1">
                          Country
                     </div>			
@@ -63,12 +61,13 @@
                             
                     </div>
 				</div>
-             </div>
+             </div>   
+			
                <div class="row-fluid">
                 <div class="span12">                    
                     <div class="head clearfix">
                         <div class="isw-grid"></div>
-                        <h1>Post Job Step2</h1>                               
+                        <h1>Invite Agents</h1>                               
                     </div>
                     <div class="block-fluid table-sorting clearfix">
                         <table cellpadding="0" cellspacing="0" width="100%" id="invitation_table" class="table datatable_list" >
