@@ -176,9 +176,12 @@ $job_status				  =    (set_value('status'))?set_value('status'): (isset($data['s
                                             <span id="address_errorUkCode1" class="error_red">* Please provide a valid Status </span>
                                         </span>
                                     </div>
-                                    <div class="span5" style="margin-left:35% !important;">
+                                    
+                                    <div class="span8" style="margin-left:35% !important;">
                                         <a style="text-decoration:underline;" id="findAddressUkCode1" class="findAddressUkCode" href="" >Find Address</a> &nbsp;&nbsp;
                                         <a style="text-decoration:underline;" href="" class="dontKnowUkCode" id="dontKnowUkCode1" > Don't Know? </a>
+                                           &nbsp;&nbsp;
+                                        <a style="text-decoration:underline;" href="http://www.royalmail.com/" target="_blank" > Can't Find </a>
                                     </div>
                                 </div>
                                 <div id='hiddenAddressFieldsUkCode1' class='hiddenAddressFieldsUkCode row-form clearfix <?php if((isset($id) && $id>0) || $ci_error == TRUE) echo ""; else echo "errorDivUkCode"; ?>'>
@@ -213,7 +216,7 @@ $job_status				  =    (set_value('status'))?set_value('status'): (isset($data['s
                                                 </div>
                                             </div>      
                                             <div class="row-form span12">
-                                                <div class="span3"><span class="txt_red">*</span>Country:</div>
+                                                <div class="span3"><span class="txt_red">*</span>County:</div>
                                                 <div class="span8">
                                                     <input type="text" class="countyUkCode" name="countyUkCode1" id="countyUkCode_hidden1"  value="<?php echo $pickup_address_line4; ?>" />
                                                     <span><?php echo form_error('countyUkCode1'); ?></span>
@@ -256,9 +259,11 @@ $job_status				  =    (set_value('status'))?set_value('status'): (isset($data['s
                                             <span id="address_errorUkCode2" class="txt-pink span11">* Please provide a valid Status </span>
                                         </span>
                                     </div>
-                                    <div class="span5" style="margin-left:35% !important;">
+                                    <div class="span8" style="margin-left:35% !important;">
                                         <a style="text-decoration:underline;" id="findAddressUkCode2" class="findAddressUkCode" href="" >Find Address</a> &nbsp;&nbsp;
                                         <a style="text-decoration:underline;" href="" class="dontKnowUkCode" id="dontKnowUkCode2" > Don't Know? </a>
+                                           &nbsp;&nbsp;
+                                        <a style="text-decoration:underline;" href="http://www.royalmail.com/" target="_blank" > Can't Find </a>
                                     </div>
                                 </div>
                                 <div id='hiddenAddressFieldsUkCode2' class='hiddenAddressFieldsUkCode row-form clearfix <?php if((isset($id) && $id>0) || ($ci_error==TRUE))  echo ""; else echo "errorDivUkCode"; ?>'>
@@ -293,7 +298,7 @@ $job_status				  =    (set_value('status'))?set_value('status'): (isset($data['s
                                                 </div>
                                             </div>      
                                             <div class="row-form span12">
-                                                <div class="span3"><span class="txt_red">*</span>Country:</div>
+                                                <div class="span3"><span class="txt_red">*</span>County:</div>
                                                 <div class="span8">
                                                     <input type="text" class="countyUkCode" name="countyUkCode2" id="countyUkCode_hidden2"  value="<?php echo $destination_address_line4; ?>" />
                                                     <span><?php echo form_error('countyUkCode2'); ?></span>
