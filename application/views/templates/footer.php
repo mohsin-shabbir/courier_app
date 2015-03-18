@@ -66,11 +66,14 @@ var source='';
 var group_input_flag;
 jQuery(function(){
 
-	$(document).on('click','input[type="reset"]',function(){
-		jQuery('.chosen-select').val('');
-		jQuery('.chosen-select').trigger('chosen:updated');
-	});
-
+ if(typeof jQuery('#id') != "undefined" && jQuery('#id').length)
+ {
+  if(jQuery('#id').val() < 0  || jQuery('#id').val() == "")  
+  $(document).on('click','input[type="reset"]',function(){
+   jQuery('.chosen-select').val('');
+   jQuery('.chosen-select').trigger('chosen:updated');
+  });
+ }
 		jQuery('.datatable_list').each(function() {
 
 			source='<?php echo (!empty($list_url)?$list_url:""); ?>';
