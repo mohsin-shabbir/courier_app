@@ -54,10 +54,9 @@
                 </div>
                 </div>
             <div class="span6">
-                    <div class="span1">
-                         Country
-                    </div>			
-                    <div class="span3" id="country_filter">
+            	<b> Search Agent By country</b>
+                    			
+                    <div class="span12" id="country_filter">
                             
                     </div>
 				</div>
