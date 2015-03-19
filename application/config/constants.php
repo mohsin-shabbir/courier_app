@@ -110,7 +110,7 @@ define('FROM_NAME','From:Courier App');
  define('AUTH_SIGNATURE','');
  define('AUTH_TIMESTAMP','');
  define('ITEMS_PER_PAGE','2');
- define('JOB_EXPIRY_DURATION ','28');
+ define('JOB_EXPIRY_DURATION','28');
 /* End of file constants
 .php */
 /* Location: ./application/config/constants.php */
