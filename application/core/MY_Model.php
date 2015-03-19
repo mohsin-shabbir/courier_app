@@ -278,10 +278,22 @@
  			 $like_str="( ";
 			 foreach($search_array as $field=>$value)
 			 {
-				if($counter++ ==1)
-					$like_str.=$field." LIKE '%".$value."%'";
-				 else
-				 	$like_str.= " OR ". $field." LIKE '%".$value."%'";
+				if(is_array($value))
+				{
+					foreach($value as $val)
+						if($counter++ ==1)
+							$like_str.=$field." LIKE '%".$val."%'";
+						 else
+							$like_str.= " OR ". $field." LIKE '%".$val."%'";
+					 continue;
+				}
+				else
+				{
+					if($counter++ ==1)
+						$like_str.=$field." LIKE '%".$value."%'";
+					 else
+						$like_str.= " OR ". $field." LIKE '%".$value."%'";
+				}
 			 }
 			 $like_str.=" )";
 			 $this->db->where($like_str);

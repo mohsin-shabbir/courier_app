@@ -161,7 +161,7 @@ class Clients extends MY_Controller
 					$message = $msg['template'];
 					send_email($this->input->post('email') , $subject ,$message );
 					
-					if(!empty($old_profile_image) && !empty($client_data['profile_image']))
+					if(!empty($old_profile_image) && !empty($client_data['profile_image'])) 
 					{
 						$thumb_image = explode('.',$old_profile_image); 
 						$thumb_image_ext =end($thumb_image);

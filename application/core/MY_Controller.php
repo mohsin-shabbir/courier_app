@@ -52,12 +52,10 @@ class MY_Controller extends CI_Controller
 				}
 			}
 
-		}
+	}
 	public function __agent()
 	{
 		parent::__construct();
-		$this->encrypt->set_cipher(MCRYPT_BLOWFISH);
-		$this->encrypt->set_mode(MCRYPT_MODE_CBC);
 		$this->load->model('common_model','db_handler',true);
 		$this->manage_tasks();
 	}
@@ -65,8 +63,6 @@ class MY_Controller extends CI_Controller
 	public function __client()
 	{
 		parent::__construct();
-		$this->encrypt->set_cipher(MCRYPT_BLOWFISH);
-		$this->encrypt->set_mode(MCRYPT_MODE_CBC);
 		$this->load->model('common_model','db_handler',true);
 		$this->manage_tasks();
 	}
@@ -457,10 +453,10 @@ class MY_Controller extends CI_Controller
 	}
 
 	public function get_cities()
-	{
+	{//array("status"=>array("Awarded","Collected")
 		if($country_code=$this->input->post('country_code'))
 		{
-		$cities=$this->db_handler->get_paged_data_by_sql('cities.id, cities.name','cities',array('country'=>$country_code,"where_string"=>array("cities.name <> ''")),"","","","","","",'cities.name');
+		$cities=$this->db_handler->get_paged_data_by_sql('cities.id, cities.name','cities', array('or_where'=> array("country" => array('ZZ',$country_code)),"where_string"=>array("cities.name <> ''")),"","","","","","",'cities.name');
 			echo json_encode($cities,true);
 			exit;
 		}

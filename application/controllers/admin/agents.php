@@ -58,7 +58,7 @@ class Agents extends MY_Controller
 				$this->data['data']=$update_data;
 				$this->data['data']['password']=$this->encrypt->decode($this->data['data']['password'],ENCRYPT_KEY);
 				$this->data['data']['security_answer']=$this->encrypt->decode($this->data['data']['security_answer'],ENCRYPT_KEY);	
-				$this->data['cities']	 =	$this->db_handler->get('cities',array('country'=>$this->data['data']['country_code']));
+				$this->data['cities']	 =	$this->db_handler->get('cities',array('or_where'=>array('country'=>array('ZZ', $this->data['data']['country_code']))));
 			}
 		}
 		else if($agent_data=$this->input->post())
@@ -91,7 +91,6 @@ class Agents extends MY_Controller
 			$this->form_validation->set_rules('vat_registered', 'VAT Status', 'trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('vat_id', 'VAT ID', 'trim|strip_tags|xss_clean');
 
-			
 			$this->form_validation->set_rules('account_title', 'Account Title', 'trim|strip_tags|xss_clean');		
 			$this->form_validation->set_rules('bank_name', 'Bank Name', 'trim|strip_tags|xss_clean');		
 			$this->form_validation->set_rules('account_no', 'Account No', 'trim|strip_tags|xss_clean');		
@@ -227,7 +226,6 @@ class Agents extends MY_Controller
 				else if(isset($response['thumb_error']))
 					$thumb_error		  = 	$response['thumb_error'];
 
-				
 				/*save data to database*/
 				if($insert_id=$this->db_handler->save('agents',$agent_data))
 				{
@@ -235,8 +233,9 @@ class Agents extends MY_Controller
 					$subject = $msg['subject'];
 					$message = $msg['template'];
 					send_email($this->input->post('email') , $subject ,$message );
+					$this->db_handler->create_notification("ADMIN","AGENT",$insert_id,0,"agent_created",$insert_id);
 
-					if(!empty($old_profile_image) && !empty($agent_data['profile_image']))
+					if(!empty($old_profile_image) && !empty($agent_data['profile_image'])) 
 					{
 						$thumb_image = explode('.',$old_profile_image); 
 						$thumb_image_ext =end($thumb_image);
@@ -279,18 +278,17 @@ class Agents extends MY_Controller
 
 				$this->delete_image();
 				if($this->input->post('country_code'))
-					$this->data['cities']	=	$this->db_handler->get('cities',array('country'=>$this->input->post('country_code')));
+					$this->data['cities']	=	$this->db_handler->get('cities',array('or_where'=>array('country'=>array('ZZ',$this->input->post('country_code')))));
 			}
 		}
 		$this->data['security_questions']   =	$this->db_handler->get('security_questions');
 		if(empty($this->data['cities']))
-			$this->data['cities']			   =	$this->db_handler->get('cities',array('country'=>'GB'));
+			$this->data['cities']			   =	$this->db_handler->get('cities',array('or_where'=>array('country'=>array('ZZ', 'GB'))));
 		$this->template->load('main','admin/agent/form',$this->data);
 	}
 	//check if no city is provided
 	private function check_cities($data)
 	{
-		
 		if ($cities=array_filter($data))
 		{
 			if(empty($cities))
@@ -716,7 +714,6 @@ class Agents extends MY_Controller
 		$this->image_data=$return_data;
 		return TRUE;
 	}
-
 	private function make_thumb($image_name)
 	{			
 		if(!empty($image_name))

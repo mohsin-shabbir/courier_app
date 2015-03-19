@@ -162,7 +162,7 @@ jQuery(window).load(function(){
 							 null,
 							 null,
 							 null,
-							 { sSelector: "#status_filter", type: "select", values: ["Active", "INACTIVE"] },
+							 { sSelector: "#status_filter", type: "select", values: ["Active", "Inactive","Blocked","Pending"] },
 							 { sSelector: "#country_filter", type: "select", values: [<?php echo $countries_list; ?>] }
 
 					]

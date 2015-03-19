@@ -38,6 +38,7 @@ class Common_Model extends MY_Model
 		{
 			$user=$user[0];
 			$user['password']=$this->encrypt->decode($user['password'],ENCRYPT_KEY);
+			
 			//if password don't match
 			if(strcmp($user['password'],$password) != 0)
 			{
@@ -148,15 +149,127 @@ class Common_Model extends MY_Model
 		$response	=	json_encode($response);
 		return $response;
 	}
+	public function create_notification($creator="",$receiver="",$creator_id="",$receiver_id="",$case="",$link_id="")
+	{									
 
-	public function get_notifications( $created_for , $created_for_id , $status = '1' )
+		if(!empty($creator)&& !empty($receiver)&& !empty($creator_id) && !empty($receiver_id) && !empty($case))
+		{
+			$notification=array();
+			$notification['created_by_id']	 =	$creator_id;
+			$notification['created_for_id']	=	$receiver_id;
+			$notification['created']	 	   =	date('Y-m-d h:i:s');
+			$link							  =	"";
+	
+			switch($creator)
+			{
+				case 'ADMIN':
+								$notification['created_by']	    =	'ADMIN';
+				case 'CLIENT':
+								$notification['created_by']	    =	'CLIENT';
+				case 'AGENT':
+								$notification['created_by']	    =	'AGENT';
+				default:
+						break;
+			}
+			switch($receiver)
+			{
+				case 'ADMIN':
+								$notification['created_for']	   =	'ADMIN';
+								$link=site_url("admin/");
+				case 'CLIENT':
+								$notification['created_for']	   =	'CLIENT';
+								$link=site_url("client/");
+				case 'AGENT':
+								$notification['created_for']	   =	'AGENT';
+								$link=site_url("agent/");
+				default:
+						break;
+			}
+			
+			
+			if(!empty($link))
+				switch($case)
+				{
+					case "client_created":
+					
+							$notification['description']=CLIENT_CREATED;
+							$notification['link']=$link.'clients/profile/'.$link_id;
+							$notification['title']="A NEW CLIENT REGISTERED";
+										break;
+					case "welcome_message":
+							
+							$notification['description']=WELCOME_MESSAGE;
+							$notification['link']=$link;
+							$notification['title']="WELCOME TO COURIER APP";
+										break;
+					case "agent_created":
+								
+							$notification['description']=AGENT_CREATED;
+							$notification['link']=$link.'agents/profile/'.$link_id;
+							$notification['title']="A NEW AGENT REGISTERED";
+										break;
+					case "job_posted":
+										
+							$notification['description']=JOB_POSTED;
+							$notification['link']=$link.'jobs/detail/'.$link_id;
+							$notification['title']="A NEW JOB POSTED";
+										break;
+					case "job_posted_by_admin":
+										
+							$notification['description']=JOB_POSTED_BY_ADMIN;
+							$notification['link']=$link;
+							$notification['title']="YOUR NEW JOB";
+										break;
+					case "job_invitation":
+										
+							$notification['description']=JOB_INVITATION;
+							$notification['link']=$link;
+							$notification['title']="JOB INVITATION";
+										break;
+					case "job_collected":
+										
+							$notification['description']=JOB_COLLECTED;
+							$notification['link']=$link.'jobs/detail/'.$link_id;
+							$notification['title']="JOB COLLECTED";
+										break;
+					case "job_awarded":
+										
+							$notification['description']= JOB_AWARDED;
+							$notification['link']=$link.'jobs/detail/'.$link_id;
+							$notification['title']="JOB ASSIGNED";
+										break;
+					case "job_done":
+										
+							$notification['description']= JOB_DONE;
+							$notification['link']=$link.'jobs/detail/'.$link_id;
+							$notification['title']="JOB COMPLETED";
+										break;
+					default:
+										break;
+						
+				}
+		}
+		
+		if(!empty($notification['created_by_id']) && 
+		   !empty($notification['created_for_id'])&& 
+		   !empty($notification['created'])&&
+		   !empty($notification['description'])&&
+		   !empty($notification['link'])&&
+		   !empty($notification['title'])&&
+		   !empty($notification['created_for']))
+		   {
+				$this->db_handler->save('notifications',$notification);
+				return TRUE;
+		   }
+		   return FALSE;
+	}
+	public function get_notifications( $created_for , $created_for_id , $status )
 	{
 		$response	 		 =	array();
 		$response['error']	=	'1';
 		$response['message']  =	'';
 		$response['data']	 =	'';
 
-		//debug( $status , true);
 		if( !empty($created_for) && !empty($created_for) )
 		{
 			$query="
@@ -173,18 +286,14 @@ class Common_Model extends MY_Model
 					end as created_for_name
 				FROM notifications AS N
 				WHERE
-				N.created_for='$created_for' and N.created_for_id=$created_for_id AND N.".$status."
+				N.created_for='$created_for' and N.created_for_id=$created_for_id
 			";
 			//$result = $this->db_handler->get('notifications',array( 'created_for'=>$created_for , 'created_for_id' => $created_for_id , 'status' => $status ));
-			//debug( $query , true );
 			$result = $this->db_handler->sql($query,true);
 			if( $result ) {
 				$response['message']=	' All notifications ';
 				$response['error']	=	'0';
 				$response['data']	=	$result ;
-			}
-			else {
-				$response['message']=	' No notifications';
 			}
 		}
 		else {
@@ -199,9 +308,12 @@ class Common_Model extends MY_Model
 		$select = "$table.*";
 		$from="$table";
 		$join_array=array();
+		$search_array=array();
 		switch($table)
 		{
 			case 'agents' :	$search_cols	=	unserialize (AGENT_SEARCH_COLS);
+								$search_array['agents.preferred_cities']	  =	array();
+								$search_array['agents.preferred_cities'][]	=	'All Cities';
 								if(!empty($where['jobs_agents.job_id']))
 								{
 									$select .= ",jobs_agents.status as job_status";
@@ -231,9 +343,12 @@ class Common_Model extends MY_Model
 		{
 			foreach($search_cols as $col)
 			{
-				$search_array[$col]	=	$search_term;
+				if(isset($search_array[$col]) && is_array($search_array[$col]))
+					$search_array[$col][]	=	$search_term;
+				else
+					$search_array[$col]	  =	$search_term;
 			}
-		}		
+		}
 		$result=$this->get_paged_data_by_sql($select,$from,$where,$join_array,$limit,$offset,$search_array,"1",$order_by);
 		return $result;
 	}
@@ -246,7 +361,7 @@ class Common_Model extends MY_Model
 	public function update_expired_jobs()
 	{
 		$job_update['status']		 =	'EXPIRED';
-		$this->update('jobs',$job_update,array('where_string'=>array("DATE(NOW())  >= DATE_ADD(`jobs`.`post_date` , INTERVAL 28 DAY)","status = 'Waiting'")));
+		$this->update('jobs',$job_update,array('where_string'=>array("DATE(NOW())  >= DATE_ADD(`jobs`.`post_date` , INTERVAL ".JOB_EXPIRY_DURATION." DAY)","status = 'Waiting'")));
 						
 			$where['status']	= "EXPIRED";
 			$expired_jobs=$this->get('jobs',$where);			

@@ -163,7 +163,7 @@
                                                             <div class="span8">
                                                             <select class="chosen-select validate[required]" multiple="multiple" name="preferred_cities[]" id="preferred_cities" data-placeholder="Choose cities..." >
                                         	<option value="">Select City :</option>
-                                            <option value="All Cities">All Cities </option>
+                                            
                                             <?php
 												foreach($cities as $city)
 												{ 

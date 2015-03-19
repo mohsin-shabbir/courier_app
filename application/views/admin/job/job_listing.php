@@ -128,7 +128,7 @@ jQuery(window).load(function(){
 							 null,
 							 null,
 							 null,
-							{ sSelector: "#status_filter", type: "select", values: ['Waiting','Awarded','Collected','Completed','INACTIVE','EXPIRED'] },							 
+							{ sSelector: "#status_filter", type: "select", values: ['Waiting','Awarded','Collected','Completed','Inactive','Expired'] },							 
 							 null,
 							 null
 					]
