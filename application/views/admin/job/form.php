@@ -1,12 +1,16 @@
 <style>
-	.errorDivUkCode 
-	{
-		display: none;
-	}
-	.radio input[type="radio"], .checkbox input[type="checkbox"] 
-	{
-		margin-left: 0px !important;
-	}
+ .errorDivUkCode 
+ {
+  display: none;
+ }
+ .radio input[type="radio"], .checkbox input[type="checkbox"] 
+ {
+  margin-left: 0px !important;
+ }
+ .error_red
+ {
+  color:red !important;
+ }
 </style>
 <script>
 function checkPostalCode()

@@ -91,6 +91,7 @@ class Agents extends MY_Controller
 			$this->form_validation->set_rules('vat_registered', 'VAT Status', 'trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('vat_id', 'VAT ID', 'trim|strip_tags|xss_clean');
 
+			
 			$this->form_validation->set_rules('account_title', 'Account Title', 'trim|strip_tags|xss_clean');		
 			$this->form_validation->set_rules('bank_name', 'Bank Name', 'trim|strip_tags|xss_clean');		
 			$this->form_validation->set_rules('account_no', 'Account No', 'trim|strip_tags|xss_clean');		
@@ -235,7 +236,7 @@ class Agents extends MY_Controller
 					$message = $msg['template'];
 					send_email($this->input->post('email') , $subject ,$message );
 
-					if(!empty($old_profile_image)) 
+					if(!empty($old_profile_image) && !empty($agent_data['profile_image']))
 					{
 						$thumb_image = explode('.',$old_profile_image); 
 						$thumb_image_ext =end($thumb_image);

@@ -52,7 +52,7 @@ class Jobs extends MY_Controller
 			$this->form_validation->set_rules('longitudeUkCode1', 'Longitude', 'required|trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('latitudeUkCode1', 'Latitude', 'required|trim|strip_tags|xss_clean');
 
-			$this->form_validation->set_rules('addressUkCode2', 'Destination Up Post Code', 'required|trim|strip_tags|xss_clean');
+			$this->form_validation->set_rules('addressUkCode2', 'Destination Post Code', 'required|trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('house_numberUkCode2', 'Address', 'required|trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('streetUkCode2', 'Street address', 'trim|strip_tags|xss_clean');
 			$this->form_validation->set_rules('townUkCode2', 'Town address', 'trim|strip_tags|xss_clean');

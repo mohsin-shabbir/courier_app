@@ -273,28 +273,28 @@
                                 <div class="row-form clearfix">
                                     <div class="span3">Account Title:</div>
                                     <div class="span9">        
-                                    	<input type="text" name="account_title" class="validate[required]"  id="account_title"value="<?php echo $account_title; ?>"/>
+                                    	<input type="text" name="account_title"   id="account_title"value="<?php echo $account_title; ?>"/>
                                         <span class='error_red'><?php echo form_error('account_title'); ?>&nbsp;</span>
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
                                     <div class="span3">Bank Name:</div>
                                     <div class="span9">        
-                                    	<input type="text" name="bank_name" class="validate[required]"  id="bank_name" value="<?php echo $bank_name; ?>"/>
+                                    	<input type="text" name="bank_name"   id="bank_name" value="<?php echo $bank_name; ?>"/>
                                         <span class='error_red'><?php echo form_error('bank_name'); ?>&nbsp;</span>
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
                                     <div class="span3">Account Number:</div>
                                     <div class="span9">        
-                                    	<input type="text" name="account_no" class="validate[required]"  id="account_no" value="<?php echo $account_no; ?>"/>
+                                    	<input type="text" name="account_no" id="account_no" value="<?php echo $account_no; ?>"/>
                                         <span class='error_red'><?php echo form_error('account_no'); ?>&nbsp;</span>
                                     </div>
                                 </div>
                                 <div class="row-form clearfix">
                                     <div class="span3">Branch Code:</div>
                                     <div class="span9">        
-                                    	<input type="text" name="branch_code" class="validate[required]"  id="branch_code" value="<?php echo $branch_code; ?>"/>
+                                    	<input type="text" name="branch_code"  id="branch_code" value="<?php echo $branch_code; ?>"/>
                                         <span class='error_red'><?php echo form_error('branch_code'); ?>&nbsp;</span>
                                     </div>
                                 </div>
