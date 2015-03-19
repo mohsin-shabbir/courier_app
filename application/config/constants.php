@@ -110,6 +110,7 @@ define('FROM_NAME','From:Courier App');
  define('AUTH_SIGNATURE','');
  define('AUTH_TIMESTAMP','');
  define('ITEMS_PER_PAGE','2');
+//// define('ITEMS_PER_PAGE','2');
 /* End of file constants
 .php */
 /* Location: ./application/config/constants.php */

@@ -436,12 +436,44 @@ class Agent extends MY_Controller
 			header('HTTP/1.1 500 Invalid page number!');
 			exit();
 		}
+		$search=$this->input->post('search');
+		$search_pattern = '';
+		if( !empty($search) && $search != 'search by title, service provider, date, offer' ) {
+			$search_pattern .= " AND (";
+			$search_pattern .= " N.title LIKE '%".$search."%'";
+			$search_pattern .= " OR A.first_name LIKE '%".$search."%' ";
+			$search_pattern .= " OR A.last_name LIKE '%".$search."%' ";
+			$search_pattern .= " OR N.created_date LIKE '%".$search."%' ";
+			$search_pattern .= " )";
+		}
 		//get current starting point of records
 		$position = ( $page_number * ITEMS_PER_PAGE );
 		//Limit our results within a specified range.
 		//$results = mysqli_query( $connecDB,"SELECT id,name,message FROM paginate ORDER BY id DESC LIMIT $position, $item_per_page");
+		$query="
+				SELECT N.*,
+				case N.created_by
+				when 'AGENT' then CONCAT(A.first_name,A.last_name)
+				when 'CLIENT' then CONCAT(C.first_name,C.last_name)
+				when 'ADMIN' then N.created_by
+				end as created_by_name,
+				case N.created_for
+				when 'AGENT' then CONCAT(A.first_name,A.last_name)
+				when 'CLIENT' then CONCAT(C.first_name,C.last_name)
+				when 'ADMIN' then N.created_for
+				end as created_for_name
+
+				FROM notifications AS N
+				LEFT JOIN agents  AS A ON ( A.id=N.created_by_id )
+				LEFT JOIN clients AS C ON ( C.id=N.created_by_id )
+				LEFT JOIN admins   AS AD ON ( AD.id=N.created_by_id )
+				WHERE N.created_for='AGENT' and N.created_for_id='".$user['user_id']."'".$search_pattern."
+				ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE."
+				";
+		$results = $this->db_handler->sql( $query ,true);
+		/*
 		$results = $this->db_handler->sql("
-SELECT N.*,
+				SELECT N.*,
 					case N.created_by
 						when 'AGENT' then (SELECT first_name FROM agents WHERE id=N.created_by_id)
 						when 'CLIENT' then (SELECT first_name FROM clients WHERE id=N.created_by_id)
@@ -455,7 +487,7 @@ SELECT N.*,
 				FROM notifications AS N
 				WHERE
 				N.created_for='AGENT' and N.created_for_id='".$user['user_id']."' ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE."",true);
-
+		*/
 		$get_total_rows = $results; //total records
 		//echo '<ul class="page_result">';
 		if( $results ) {
@@ -484,10 +516,9 @@ SELECT N.*,
 
 	public function search_service_provider()
 	{
-		$user = ($this->session->userdata('agent'))?$this->session->userdata('agent'):array();
-		//$agent = ($this->session->userdata('agent'))?$this->session->userdata('agent'):array();
-		if(!empty($user['user_id']))
-		{
+		//$user = ($this->session->userdata('agent'))?$this->session->userdata('agent'):array();
+		//if(!empty($user['user_id']))
+		//{
 			$results = $this->db_handler->sql("SELECT COUNT(*) AS total FROM agents WHERE status='Active'",true);
 			if( $results )
 			{
@@ -504,16 +535,12 @@ SELECT N.*,
 				$this->data['total_pages'] = 0;
 				$this->template->load('main_front','front/agent/search-service-provider',$this->data);
 			}
-		}
-		//else if(!empty($agent['user_id']))
-		//{
-		//	$this->template->load('main_front','front/agent/notification',$this->data);
 		//}
-		else
-		{
-			$this->session->set_flashdata('error_message','Please login to proceed');
-			redirect('agent/login');
-		}
+		//else
+		//{
+		//	$this->session->set_flashdata('error_message','Please login to proceed');
+		//	redirect('agent/login');
+		//}
 	}
 	public function fetch_service_provider($page)
 	{
@@ -549,7 +576,7 @@ SELECT * FROM agents WHERE status='Active' ORDER BY id DESC LIMIT ".$position.",
 				else
 					$profile_image = base_url("upload/agents/thumbs/placeholder.jpg");
 				echo '
-					<div class="media"><div class="media-left search_media_left"><a href="#"><img class="media-object" src="'.$profile_image.'" alt="..."></a></div><div class="media-body"><p class="item-id">Agent ID: <span>'.$val["id"].'</span></p><div class="job-title"><h2>Please send me invitation</h2><h3 class="client-name">'.$val["salutation"].' '.$val["first_name"].' '.$val["last_name"].'</h3></div><div class="job-detail"><p>Company name:<strong>'.$val["company_name"].'</strong></p></div><div class="clear"></div><div class="action-btns"><a href="#" class="more-detail">More details</a> <a href="#" class="invite-btn"></a></div></div></div>
+					<div class="media"><div class="media-left search_media_left"><a href="#"><img class="media-object" src="'.$profile_image.'" alt="..."></a></div><div class="media-body"><p class="item-id">Agent ID: <span>'.$val["id"].'</span></p><div class="job-title"><h2>Please send me invitation</h2><h3 class="client-name">'.$val["salutation"].' '.$val["first_name"].' '.$val["last_name"].'</h3></div><div class="job-detail"><p>Company name:<strong>'.$val["company_name"].'</strong></p></div><div class="clear"></div><div class="action-btns"><a href="#" class="more-detail">More details</a> <a href="#" class="invite-btn" agent-id="'.$val["id"].'" ></a></div></div></div>
 			';
 			}
 		}
@@ -638,6 +665,19 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 			header('HTTP/1.1 500 Invalid page number!');
 			exit();
 		}
+		$search=$this->input->post('search');
+		$search_pattern = '';
+		if( !empty($search) && $search != 'search by title, service provider, date, offer' ) {
+			$search_pattern .= " AND (";
+			$search_pattern .= " J.title LIKE '%".$search."%'";
+			$search_pattern .= " OR A.first_name LIKE '%".$search."%' OR A.last_name LIKE '%".$search."%' ";
+			$search_pattern .= " OR A.last_name LIKE '%".$search."%' ";
+			$search_pattern .= " OR P.amount LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.created_date LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.post_date LIKE '%".$search."%' ";
+			$search_pattern .= " )";
+			//$service_provider = " AND (A.first_name LIKE '%".$search."%' OR A.last_name LIKE '%".$search."%' ";
+		}
 		//get current starting point of records
 		$position = ( $page_number * ITEMS_PER_PAGE );
 		$query='';
@@ -648,7 +688,8 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 					LEFT JOIN clients as C ON ( C.id = J.client_id )
 					LEFT JOIN agents as A ON ( A.id = J.agent_id )
 					LEFT JOIN payments as P ON ( P.job_id = J.id )
-					WHERE J.agent_id='".$user['user_id']."' ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
+					WHERE J.agent_id='".$user['user_id']."'".$search_pattern."
+					ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
 		}
 		else if( $job_type == 'completed' ){
 			$query = "
@@ -657,7 +698,8 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 					LEFT JOIN clients as C ON ( C.id = J.client_id )
 					LEFT JOIN agents as A ON ( A.id = J.agent_id )
 					LEFT JOIN payments as P ON ( P.job_id = J.id )
-					WHERE J.agent_id='".$user['user_id']."' AND J.status='Completed' ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
+					WHERE J.agent_id='".$user['user_id']."' AND J.status='Completed' ".$search_pattern."
+					ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
 		}
 		else if( $job_type == 'inprogress' ){
 			$query = "
@@ -666,7 +708,8 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 					LEFT JOIN clients as C ON ( C.id = J.client_id )
 					LEFT JOIN agents as A ON ( A.id = J.agent_id )
 					LEFT JOIN payments as P ON ( P.job_id = J.id )
-					WHERE J.agent_id='".$user['user_id']."' AND (J.status='Collected' OR J.status='Awarded')  ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
+					WHERE J.agent_id='".$user['user_id']."' AND (J.status='Collected' OR J.status='Awarded')  ".$search_pattern."
+					ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
 		}
 		else if( $job_type == 'waiting' ){
 			$query = "
@@ -675,7 +718,8 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 					LEFT JOIN clients as C ON ( C.id = J.client_id )
 					LEFT JOIN agents as A ON ( A.id = J.agent_id )
 					LEFT JOIN payments as P ON ( P.job_id = J.id )
-					WHERE J.agent_id='".$user['user_id']."' AND J.status='Waiting' ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
+					WHERE J.agent_id='".$user['user_id']."' AND J.status='Waiting' ".$search_pattern."
+					ORDER BY id DESC LIMIT ".$position.", ".ITEMS_PER_PAGE;
 		}
 		//Limit our results within a specified range.
 		$results = $this->db_handler->sql($query,true);
@@ -726,6 +770,36 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 		}
 	}
 
+	public function invite( )
+	{
+		$user = ($this->session->userdata('client'))?$this->session->userdata('client'):array();
+		if( !empty( $user['user_id'] ) ) {
+			$response=array();
+			$query = "
+					SELECT
+					J.*,
+					(SELECT clients.profile_thumb FROM clients WHERE clients.id=J.client_id) AS client_img
+					FROM jobs AS J
+					WHERE J.client_id=".$user['user_id']." AND status='Waiting'
+					ORDER BY id DESC
+					";
+			$results = $this->db_handler->sql( $query , true );
+
+			if( $results ) {
+				foreach ($results as $key => $val) {
+					$response[] = array(
+						'id' => $val['id'],
+						'title' => $val['title'],
+					);
+				}
+			}
+			echo json_encode( array( 'code' => '100', 'result' => $response ) );
+		}
+		else {
+			echo json_encode( array( 'code' => '101', 'result' => array() ) );
+		}
+	}
+
 	public function forget_password()
 	{
 		if($this->input->post())
@@ -750,6 +824,57 @@ SELECT jobs.*,(SELECT clients.profile_thumb FROM clients WHERE clients.id=jobs.c
 				$this->data['error_message']='Please enter correct information';
 		}
 		$this->template->load('main_front','front/agent/forget-password',$this->data);
+	}
+	public function update_password()
+	{
+		$user = ($this->session->userdata('agent'))?$this->session->userdata('agent'):array();
+		if(!empty($user['user_id']))
+		{
+			if($client_data=$this->input->post())
+			{
+				$this->form_validation->set_rules('password', 'Password', 'required|trim|strip_tags|xss_clean|min_length[8]');
+				$this->form_validation->set_rules('new_password', 'Password', 'required|trim|strip_tags|xss_clean|min_length[8]');
+				$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|trim|strip_tags|xss_clean|matches[new_password]');
+				if ($this->form_validation->run())
+				{
+					$user_details	=	$this->db_handler->get( 'agents' ,array('id' => $user['user_id'] ) );
+					$password=$this->encrypt->decode( $user_details[0]['password'],ENCRYPT_KEY);
+					//if password don't match
+					if( strcmp( $password ,$client_data['password']) != 0)
+					{
+						$this->session->set_flashdata('error_message','Wrong old password');
+						redirect('agent/update_password');
+					}
+					$data_to_store = array(
+						'id' => $user['user_id'],
+						'password' => $this->encrypt->encode($client_data['new_password'],ENCRYPT_KEY)
+					);
+					if($insert_id=$this->db_handler->save('agents',$data_to_store))
+					{
+						//$msg = $this->db_handler->prepMsg($insert_id , '8' ,'clients');
+						//$subject = $msg['subject'];
+						//$message = $msg['template'];
+						//send_email($this->input->post('email') , $subject ,$message );
+						$this->session->set_flashdata('success_message',' Password has been changed successfully ');
+						redirect('agent/update_password');
+					}
+					else
+					{
+						$this->data['error_message']	=	'Database Error: Update failed ';
+					}
+				}
+				else
+				{
+					$this->data['error_message']	=	'Please Enter correct information';
+				}
+			}
+			$this->template->load('main_front','front/agent/update-password',$this->data);
+		}
+		else
+		{
+			$this->session->set_flashdata('error_message','Please login to proceed');
+			redirect('agent/login');
+		}
 	}
 	public function logout($level)
 	{

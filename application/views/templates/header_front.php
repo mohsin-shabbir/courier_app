@@ -79,7 +79,7 @@
                               </ul>
 							</div>
                         </li>
-                        <li class="scroll"><a href="<?php echo base_url() ?>client/search_jobs">Find a job</a></li>
+                        <li class="scroll"><a href="<?php echo base_url() ?>home/search_jobs">Find a job</a></li>
                         <li class="scroll"><a href="<?php echo base_url() ?>agent/search_service_provider" class="two-lines">Companies / <br />Service Provider</a></li>
                         <li class="scroll"><a href="<?php echo base_url() ?>home#features">How it works</a></li>
                         <li class="scroll"><a href="<?php echo base_url() ?>home#about">About us</a></li>

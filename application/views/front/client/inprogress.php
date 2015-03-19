@@ -1,8 +1,8 @@
 <script type="text/javascript" language="JavaScript" >
+    var track_click = 0; //track user click on "load more" button, righ now it is 0 click
+    var total_pages = <?php echo $total_pages; ?>;
+    var job_type = '<?php echo $job_type; ?>';
     $(document).ready(function() {
-        var track_click = 0; //track user click on "load more" button, righ now it is 0 click
-        var total_pages = <?php echo $total_pages; ?>;
-        var job_type = '<?php echo $job_type; ?>';
         $('#results').load('<?php echo base_url() ?>client/fetch_client_jobs/'+track_click+'/'+job_type, {'page':track_click}, function() {track_click++;}); //initial data to load
         $(".load_more").click(function (e) { //user clicks on button
             $(this).hide(); //hide load more button on click
@@ -11,7 +11,7 @@
             if(track_click <= total_pages) //make sure user clicks are still less than total pages
             {
                 //post page number and load returned data into result element
-                $.post('<?php echo base_url() ?>client/fetch_client_jobs/'+track_click+'/'+job_type,{'page': track_click}, function(data) {
+                $.post('<?php echo base_url() ?>client/fetch_client_jobs/'+track_click+'/'+job_type,{'page': track_click,'search': $('#search').val()}, function(data) {
                     $(".load_more").show(); //bring back load more button
                     $("#results").append(data); //append data received from server
                     //$( data ).hide().appendTo('#results').show(1000);
@@ -28,14 +28,20 @@
                 if(track_click >= total_pages-1)
                 {
                     //reached end of the page yet? disable load button
-                    $(".load_more").attr("disabled", "disabled");
+                    //$(".load_more").attr("disabled", "disabled");
                 }
             }
             else {
                 $('.animation_image').hide();
                 $(".load_more").show();
-                $(".load_more").attr("disabled", "disabled");
+                //$(".load_more").attr("disabled", "disabled");
             }
+        });
+        $(document).on('blur','#search',function(){
+            //alert( $(this).val() );
+            track_click=0;
+            $('#results').empty();
+            $( ".load_more" ).trigger( "click" );
         });
     });
 </script>
@@ -62,7 +68,7 @@
              <div class="col-sm-8 col-sm-push-1">
             	<div class="dashboard-content">
                 	<div class="db-search">
-                    	<input type="text" name="search" value="search by title, service provider, date, offer" class="db-search-field" onfocus="(this.value == 'search by title, service provider, date, offer') && (this.value = '')"  onblur="(this.value == '') && (this.value = 'search by title, service provider, date, offer')">
+                    	<input type="text" id="search" name="search" value="search by title, service provider, date, offer" class="db-search-field" onfocus="(this.value == 'search by title, service provider, date, offer') && (this.value = '')"  onblur="(this.value == '') && (this.value = 'search by title, service provider, date, offer')">
                     </div>
                     <div class="db-title">
                     	<h2>

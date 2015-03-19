@@ -1,12 +1,70 @@
 <div class="container container-top-padding">
-<script>
+<script type="text/javascript" language="javascript">
+base_url='<?php echo base_url(); ?>';
 $(document).ready(function(){
-	 $(".panel-body").hide();
-    $(".lbl-adv-search").click(function()
-	{
+    $(".panel-body").hide();
+    $(".lbl-adv-search").click(function() {
         $(".panel-body").toggle("100");
     });
+    $("#confirm_login").dialog({autoOpen: false,
+        modal: true,
+        width: 400,
+        buttons: {
+            "Ok": function() {
+                //$( this ).dialog( "close" );
+                window.location.href = base_url+'client/login';
+            },
+            Cancel: function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+    $("#select_job").dialog({autoOpen: false,
+        modal: true,
+        width: 400,
+        buttons: {
+            "Ok": function() {
+                $( this ).dialog( "close" );
+            },
+            Cancel: function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+    $(document).on('click','.invite-btn',function(){
+        //alert(  $(this).attr('agent-id') );
+        var url='';
+        if( $(this).attr('agent-id') ) {
+            url = base_url + "agent/invite/" + $(this).attr('agent-id');
+            invite(url);
+        }
+    });
 });
+function invite(url){
+    $.ajax({
+        url: url,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            //styler: escape($('#styler_id').val())
+        },
+        success: function (data) {
+            console.log(data);
+            if( data.code == '101' ){
+                $("#confirm_login").dialog('open');
+            }else if ( data.code == '100' ){
+                //console.log( data.result[0] );
+                $("#select_job").dialog('open');
+                $("#client_jobs").empty();
+                $("#client_jobs").append('<option value="">Choose an option</option>');
+                $.each( data.result, function() {
+                    $("#client_jobs").append('<option value="' + this.id + '">' + this.title + '</option>');
+                });
+            }
+            //$('#details_first_name').text(data.first_name);
+        }
+    });
+}
 </script>
 <script type="text/javascript" language="JavaScript" >
     $(document).ready(function() {
@@ -256,7 +314,24 @@ $(document).ready(function(){
         </div> <!-- panel content -->
         <div class="clear"></div>
     </div> <!-- simple panel -->
-</section>  
+
+<div class="dialog" id="select_job" style="display: none;" title="Invite">
+    <div class="block">
+        <span>Select job:</span>
+        <select id="client_jobs" name="client_jobs">
+        </select>
+        <div class="dr"><span></span></div>
+        <p></p>
+    </div>
+</div>
+<div class="dialog" id="confirm_login" style="display: none;" title="Invite">
+    <div class="block">
+        <span>You will have to login first. Press ok to login:</span>
+        <div class="dr"><span></span></div>
+    </div>
+</div>
+
+</section>
 
 </div> <!-- container -->
     

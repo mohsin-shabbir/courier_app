@@ -82,9 +82,83 @@ class Home extends MY_Controller
 	////////////////////////////////////////////////////////agent_vat//////////////////////////////////////////////////////////////
 	public function search_jobs()
 	{
-		$this->template->load('main_front','front/agent-finded-job',$this->data);  
+		$results = $this->db_handler->sql("SELECT COUNT(*) AS total FROM jobs WHERE status='Waiting'",true);
+		if( $results )
+		{
+			$get_total_rows = $results[0]['total']; //total records
+			//break total records into pages
+			$total_pages = ceil($get_total_rows/ITEMS_PER_PAGE);
+			//$this->data['notifications'] = $result['data'];
+			$this->data['total_pages'] = $total_pages;
+		}
+		else
+		{
+			//$this->session->set_flashdata('error_message',$result['message']);
+			$this->data['total_pages'] = 0;
+		}
+		$this->template->load('main_front','front/agent-finded-job',$this->data);
 	}
-	
+	public function fetch_jobs($page)
+	{
+		$page_number = filter_var( $page , FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_STRIP_HIGH);
+		//throw HTTP error if page number is not valid
+		if(!is_numeric($page_number)){
+			header('HTTP/1.1 500 Invalid page number!');
+			exit();
+		}
+		$search=$this->input->post('search');
+		$search_pattern = '';
+		if( !empty($search) && $search != 'job  title   date  city   country  postcode' ) {
+			$search_pattern .= " AND (";
+			$search_pattern .= " J.title LIKE '%".$search."%'";
+			$search_pattern .= " OR J.pickup_post_code LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.destination_post_code LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.pickup_address_line2 LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.destination_address_line2 LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.created_date LIKE '%".$search."%' ";
+			$search_pattern .= " OR J.post_date LIKE '%".$search."%' ";
+			$search_pattern .= " )";
+		}
+		//get current starting point of records
+		$position = ( $page_number * ITEMS_PER_PAGE );
+		//Limit our results within a specified range.
+		$query="
+				SELECT
+				J.*,
+				(SELECT clients.profile_thumb FROM clients WHERE clients.id=J.client_id) AS client_img
+				FROM jobs AS J
+				WHERE J.status='Waiting'".$search_pattern."
+				ORDER BY J.id DESC
+				LIMIT ".$position.", ".ITEMS_PER_PAGE;
+		$results = $this->db_handler->sql( $query , true );
+
+		$get_total_rows = $results; //total records
+		if( $results ) {
+			foreach ($results as $key => $val) {
+				$start_date = new DateTime(date('Y-m-d H:m:s', time()));
+				$since_start = $start_date->diff(new DateTime($val["created_date"]));
+				if ($since_start->d > 0) {
+					$days = $since_start->d . ' days ago';
+				} else if ($since_start->h > 0) {
+					$days = $since_start->h . ' hours ago';
+				} else if ($since_start->i > 0) {
+					$days = $since_start->i . ' minutes ago';
+				} else if ($since_start->s > 0) {
+					$days = $since_start->s . ' seconds ago';
+				}
+				if(!empty($val['client_img']))
+					$profile_image= (file_exists(CLIENT_THUMB_PATH.$val['client_img'])?base_url('upload/clients/thumbs/'.$val['client_img']):base_url('upload/clients/thumbs/image_not_found.png'));
+				else
+					$profile_image = base_url("upload/clients/thumbs/placeholder.jpg");
+				echo '
+					<div class="media"><div class="media-left search_media_left"><a href="#"><img class="media-object" src="'.$profile_image.'" alt="..."></a></div><div class="media-body"><p class="item-id">Job ID: <span>'.$val["id"].'</span></p><div class="job-title"><h2>Please send me invitation</h2><h3 class="client-name">'.$val["title"].'</h3></div><div class="job-detail"><p>Description:<strong>'.$val["description"].'</strong></p></div><div class="clear"></div><div class="action-btns"><a href="#" class="more-detail">More details</a> <a href="#" role="button" class="invite-btn"></a></div></div></div>
+			';
+			}
+		}
+		else {
+			echo 'No more records';
+		}
+	}
 	////////////////////////////////////////////////////////agent_vat//////////////////////////////////////////////////////////////
 	public function forget_password()
 	{
